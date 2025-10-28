@@ -8,21 +8,35 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: 📝 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      # --- PASO 1: TRANSFERIR EL ARCHIVO DOCKER-COMPOSE ---
+      - name: 📤 Copy docker-compose.yml via SCP
+        uses: appleboy/scp-action@v0.1.6 # Usaremos la acción SCP
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: root
+          key: ${{ secrets.DO_SSH_KEY }}
+          # Source y target son válidos en esta acción
+          source: "docker-compose.yml"
+          target: "/root/minecraft-server/"
+          # Crea el directorio si no existe
+          rm: true 
+          
+      # --- PASO 2: EJECUTAR COMANDOS DOCKER EN EL SERVIDOR ---
+      - name: ⚙️ Run Docker Commands via SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.DO_HOST }}
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
-          source: "docker-compose.yml"
-          target: "/root/minecraft-server/"
           script: |
-            mkdir -p /root/minecraft-server
+            # Ir al directorio donde se copió el archivo
             cd /root/minecraft-server
             echo "Updating server..."
+            
+            # Los comandos de Docker ahora pueden leer el archivo
             docker-compose pull
             docker-compose up -d
             echo "Deployment finished."
