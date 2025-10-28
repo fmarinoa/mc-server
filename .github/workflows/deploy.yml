@@ -18,11 +18,12 @@ jobs:
           username: root
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
-            cd /root/minecraft-server || mkdir /root/minecraft-server && cd /root/minecraft-server
+            mkdir -p /root/minecraft-server
+            cd /root/minecraft-server
             echo "Updating server..."
             rm -f docker-compose.yml
             cat > docker-compose.yml <<'EOF'
             $(cat docker-compose.yml)
             EOF
-            docker compose pull
-            docker compose up -d
+            docker-compose pull
+            docker-compose up -d
