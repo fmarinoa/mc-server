@@ -1,0 +1,28 @@
+name: Deploy Minecraft Server
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: root
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            cd /root/minecraft-server || mkdir /root/minecraft-server && cd /root/minecraft-server
+            echo "Updating server..."
+            rm -f docker-compose.yml
+            cat > docker-compose.yml <<'EOF'
+            $(cat docker-compose.yml)
+            EOF
+            docker compose pull
+            docker compose up -d
