@@ -21,6 +21,6 @@ jobs:
             mkdir -p /root/minecraft-server
             cd /root/minecraft-server
             echo "Updating server..."
-            scp -i ~/.ssh/id_rsa $GITHUB_WORKSPACE/docker-compose.yml root@${{ secrets.DO_HOST }}:/root/minecraft-server/docker-compose.yml
+            scp -o StrictHostKeyChecking=no $GITHUB_WORKSPACE/docker-compose.yml root@${{ secrets.DO_HOST }}:/root/minecraft-server/docker-compose.yml
             docker-compose pull
             docker-compose up -d
