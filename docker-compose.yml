@@ -11,6 +11,7 @@ services:
       MEMORY: "2G"
       VERSION: "1.20.1"
       MOTD: "Servidor Franco - Docker"
+      OPS: "franco"
     volumes:
       - ./minecraft-data:/data
     restart: unless-stopped
